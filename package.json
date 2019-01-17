@@ -1,0 +1,13 @@
+{
+  "name": "DralithBot",
+  "version": "0.2.0",
+  "description": "Dralith's Twitch/Discord Bot",
+  "main": "main.js",
+  "author": "Dralith",
+  "dependencies": {
+    "eris": "^0.8.0",
+    "got": "^7.1.0",
+    "mysql": "^2.16.0",
+    "tmi.js": "^1.2.1"
+  }
+}
