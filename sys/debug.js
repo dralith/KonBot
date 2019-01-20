@@ -2,6 +2,9 @@ exports.DeBug = (level, channel, message) => {
   console.log('[' + _getTimestamp() + '] <' + channel + '> ' + level + ': ' + message)
 }
 
+exports.destruct = () => {
+}
+
 function _getTimestamp () {
   let date = new Date()
   let h = date.getHours()

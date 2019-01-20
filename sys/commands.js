@@ -3,7 +3,7 @@ var cooldowns = new Map()
 
 function dispatch (type, channel, message) {
   if (type === 'twitch') Bot.twitch._sendMessage(channel, message)
-  if (type === 'discord') Bot.discord.client.createMessage(channel.id, message)
+  if (type === 'discord') Bot.discord.createMessage(channel.id, message)
 }
 
 exports.create = (bot) => {
@@ -25,7 +25,12 @@ exports.create = (bot) => {
     }
   }
 
-  Bot.dbg.DeBug('info', 'DralithBot', 'Loaded Command object')
+  Bot.dbg.DeBug('info', 'KonBot', 'Init Command object')
+}
+
+exports.destruct = () => {
+  Bot.twitch.commands = null
+  Bot.discord.commands = null
 }
 
 exports.process = (type, message, channel, user, self) => {

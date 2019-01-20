@@ -1,12 +1,24 @@
-var stdin = process.openStdin() // Initialize CommandLine Input
+var Bot
+var stdin
 
-exports.create = (Bot) => {
-  stdin.addListener('data', function (d) { // note:  d is an object
-    let input = d.toString().trim()
-    if (input.startsWith('/')) {
-      Bot.cli.processCommand(input)
-    }
-  })
+function checkCommand (d) { // note:  d is an object
+  let input = d.toString().trim()
+  if (input.startsWith('/')) {
+    Bot.cli.processCommand(input)
+  }
+}
+
+exports.create = (bot) => {
+  Bot = bot
+  stdin = process.openStdin() // Initialize CommandLine Input
+  stdin.addListener('data', checkCommand)
+
+  Bot.dbg.DeBug('info', 'KonBot', 'Init CommandLine object')
+}
+
+exports.destruct = () => {
+  Bot = null
+  stdin.removeListener('data', checkCommand)
 }
 
 exports.processCommand = (arg) => {
@@ -32,5 +44,9 @@ exports.processCommand = (arg) => {
       default:
         break
     }
+  }
+  if (command === 'reload') {
+    console.log('Hotbooting in 5 seconds!!')
+    setTimeout(function () { Bot.hotBoot() }, 5000)
   }
 }

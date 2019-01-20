@@ -1,5 +1,32 @@
 var Bot, tmi, client
 
+function twitchJoin (channel, username, self) {
+  twitchJoLeCh(channel, username, self, 'joined')
+}
+
+function twitchLeave (channel, username, self) {
+  twitchJoLeCh(channel, username, self, 'left')
+}
+
+function twitchChat (channel, user, message, self) {
+  twitchJoLeCh(channel, user, self, 'chat', message)
+}
+
+function twitchJoLeCh (channel, username, self, t, message) {
+  if (self || Bot.bots.includes(username.toLowerCase())) return
+  if (t !== 'chat') { Bot.dbg.DeBug('info', channel, username + ' ' + t + '.') }
+  if (Bot.twitch.Viewers.has(username.toLowerCase()) && t === 'left') {
+    Bot.twitch.Viewers.delete(username.toLowerCase())
+  } else if (!Bot.twitch.Viewers.has(username.toLowerCase()) && t === 'joined') {
+    Bot.twitch.Viewers.set(username.toLowerCase(), {})
+  } else if (t === 'chat') {
+    if (!Bot.twitch.Viewers.has(username['username'].toLowerCase())) {
+      Bot.twitch.Viewers.set(username['username'].toLowerCase(), username)
+    }
+    Bot.cmd.process('twitch', message, channel, username, self)
+  }
+}
+
 exports.create = (bot) => {
   Bot = bot
   tmi = require('tmi.js')
@@ -25,35 +52,23 @@ exports.create = (bot) => {
   }
 
   client = tmi.client(options)
-  Bot.dbg.DeBug('info', 'DralithBot', 'Loaded Twitch object')
+  Bot.dbg.DeBug('info', 'KonBot', 'Init Twitch object')
 
   client.connect().catch(err => {
     Bot.dbg.DeBug('ERROR', 'twitch', err.message)
   })
 
-  client.on('join', function (channel, username, self) {
-    if (self || Bot.bots.includes(username.toLowerCase())) return
-    Bot.dbg.DeBug('info', channel, username + ' joined.')
-    if (!Bot.twitch.Viewers.has(username)) {
-      Bot.twitch.Viewers.set(username, {})
-    }
-  })
+  client.on('join', twitchJoin)
+  client.on('leave', twitchLeave)
+  client.on('chat', twitchChat)
+}
 
-  client.on('leave', function (channel, username, self) {
-    if (self || Bot.bots.includes(username.toLowerCase())) return
-    Bot.dbg.DeBug('info', channel, username + ' left.')
-    if (Bot.twitch.Viewers.has(username)) {
-      Bot.twitch.Viewers.delete(username)
-    }
-  })
-
-  client.on('chat', function (channel, user, message, self) {
-    if (self || Bot.bots.includes(user.username.toLowerCase())) return
-    Bot.cmd.process('twitch', message, channel, user, self)
-    if (!Bot.twitch.Viewers.has(user.username.toLowerCase())) {
-      Bot.twitch.Viewers.set(user.username.toLowerCase(), user)
-    }
-  })
+exports.destruct = () => {
+  Bot.twitch.Viewers = null
+  client.removeListener('join', twitchJoin)
+  client.removeListener('leave', twitchLeave)
+  client.removeListener('chat', twitchChat)
+  client.disconnect()
 }
 
 exports._sendMessage = (channel, message) => {

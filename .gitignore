@@ -1,3 +1,15 @@
+attic/
+.stats
+etc/*.json
+*~
+
+cmds/Discord/wi*
+cmds/Discord/mo*
+cmds/Discord/qu*
+cmds/Twitch/bo*
+cmds/Twitch/s*
+
+
 # Logs
 logs
 *.log

@@ -3,5 +3,8 @@ exports.create = (bot) => {
   // var mysql = require('mysql')
   var Bot = bot
 
-  Bot.dbg.DeBug('info', 'DralithBot', 'Loaded Database object')
+  Bot.dbg.DeBug('info', 'KonBot', 'Init Database object')
+}
+
+exports.destruct = () => {
 }
